@@ -1,32 +1,29 @@
-import pandas as pd
 from sqlalchemy.orm import sessionmaker
 
-from crear_base import Saludo
+from crear_base import Saludo2
 from configuracion import engine
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
-miSaludo = Saludo()
-miSaludo.mensaje = "Hola que tal"
-miSaludo.tipo = "informal"
-
-miSaludo2 = Saludo()
-miSaludo2.mensaje = "Buenas tardes"
-miSaludo2.tipo = "formal"
-
-session.add(miSaludo)
-session.add(miSaludo2)
+# se crea un objeto de tipo
+# Saludo
 
 
-df = pd.read_csv("saludos_mundo.csv")
+import csv
 
-for _, row in df.iterrows():
-    saludo = Saludo()
-    saludo.mensaje = row["saludo"]
-    saludo.tipo = row["tipo"]
-    session.add(saludo)
+# Abrir el archivo CSV
+with open("data/saludos_mundo.csv", newline='', encoding='utf-8') as csvfile:
+    lector = csv.reader(csvfile, delimiter='|')  
+    encabezado = next(lector)  
+    for fila in lector:
+        saludo = fila[0]
+        tipo = fila[1]
+        origen = fila[2]
+        session.add(Saludo2(mensaje =fila[0], tipo =fila[1], origen= fila[2]))
 
-# Confirmar todas las transacciones
+
+
+# se confirma las transacciones
 session.commit()
+
